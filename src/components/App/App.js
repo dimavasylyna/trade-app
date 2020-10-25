@@ -5,11 +5,14 @@ import Stats from "../Stats/Stats";
 import DisplayData from "../DisplayData/DisplayData";
 import {calcMean, calcSD, time} from "../../utils/calcStats";
 import SocketAPI from "../../utils/socketAPI";
+import Loader from "../Loader/Loader";
 
 class App extends Component {
 
     state = {
+        isCalculating: false,
         isDataReadyToCalc: false,
+        isDataReadyToShow: false,
         isSocketInit: false,
         isSocketOpen: false,
         displayData: {
@@ -55,10 +58,13 @@ class App extends Component {
         if (!this.socket.serverData.length) {
             return;
         }
+        this.setState({isCalculating: true});
         let mean = calcMean(this.socket.serverData);
         let sd = calcSD(this.socket.serverData, mean);
         this.setState(()=>{
             return {
+                isCalculating: false,
+                isDataReadyToShow: true,
                 displayData: {
                     ...this.state.displayData,
                     mean,
@@ -74,18 +80,27 @@ class App extends Component {
         return (
             <div className={s.app}>
                 <div className={s.container}>
-                    <Start
-                        onStartSocket={this.onStartSocket}
-                        closeSocket={this.closeSocket}
-                        isSocketOpen={this.state.isSocketOpen}
-                    />
-                    <Stats
-                        calcData={this.calcData}
-                        isDataReadyToCalc={this.state.isDataReadyToCalc}
-                    />
-                    <DisplayData
+                   <div className={s.controls}>
+                       <Start
+                           onStartSocket={this.onStartSocket}
+                           closeSocket={this.closeSocket}
+                           isSocketOpen={this.state.isSocketOpen}
+                       />
+                       <Stats
+                           calcData={this.calcData}
+                           isDataReadyToCalc={this.state.isDataReadyToCalc}
+                       />
+                   </div>
+                    {
+                        (!this.state.isDataReadyToCalc && this.state.isSocketInit) && <Loader text="З'єднання з сервером..."/>
+                    }
+                    {this.state.isCalculating
+                        ? <Loader text='Проводимо розрахунки...'/>
+                        : this.state.isDataReadyToShow && <DisplayData
                         displayData={this.state.displayData}
                     />
+                    }
+
                 </div>
             </div>
         )
