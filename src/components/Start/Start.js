@@ -1,12 +1,18 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 export default function Start(props) {
-    console.log('render Start component');
-    const {isSocketOpen} = props;
+    const {isDataReadyToCalc} = props;
 
     return (
-            isSocketOpen
-                ? <button onClick={props.closeSocket} className="btn">Стоп</button>
-                : <button onClick={props.onStartSocket} className="btn">Старт</button>
+        isDataReadyToCalc
+            ? <button onClick={props.closeSocket} className="btn">Розірвати з'єднання</button>
+            : <button onClick={props.onStartSocket} className="btn">Старт</button>
     )
+}
+
+Start.propTypes = {
+    onStartSocket: PropTypes.func.isRequired,
+    closeSocket: PropTypes.func.isRequired,
+    isDataReadyToCalc: PropTypes.bool.isRequired,
 }

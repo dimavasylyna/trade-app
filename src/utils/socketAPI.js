@@ -3,7 +3,6 @@ export default class SocketAPI {
         this.socket = new WebSocket(settings.url);
         this.socket.addEventListener('open',  settings.open);
         this.socket.addEventListener('message', settings.message);
-        this.serverData = [];
     }
     close = () => {
         let code = 1000;
